@@ -68,12 +68,6 @@ const gifRight = {
 // pause the game
 pause = () => onButtonPressed = !onButtonPressed;
 
-// background
-drawBg = (x, y) => {
-    ctx.drawImage(bgImg, x, y, 317, 400);
-    ctx.restore();
-}
-
 // net
 drawNet = () => {
     for (let i = 0; i <= c.height; i += 15) {
