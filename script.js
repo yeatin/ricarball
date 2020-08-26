@@ -50,7 +50,6 @@ const ball = {
     speed: 7,
     velocityX: 3,
     velocityY: 3,
-    color: 'white'
 }
 
 // gif
@@ -93,18 +92,21 @@ drawPaddle = (x, y) => {
 // load images
 const ballImg = new Image();
 ballImg.src = './ricardo.jpg';
-const bgImg = new Image();
-bgImg.src = './ricardo_background.jpg'
 
 // ball
-drawBall = (x, y, radius, color) => {
+drawBall = (x, y, radius) => {
     ctx.save();
-    ctx.fillStye = color;
+    ctx.fillStye = 'red';
+    ctx.beginPath();
+    ctx.arc(x, y, radius + 1, 0, Math.PI * 2)
+    ctx.closePath();
+    ctx.fill();
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2)
+    ctx.closePath();
     ctx.clip();
     // draw ricardo
-    ctx.drawImage(ballImg, x - 25, y - 22, 50, 50);
+    ctx.drawImage(ballImg, x - 35, y - 30, 70, 70);
     ctx.restore();
 }
 
@@ -141,6 +143,7 @@ window.addEventListener('keydown', (event) => event.keyCode === 13 ? pause() : n
 
 
 render = () => {
+    // draw the background
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, c.width, c.height)
     // when the game is paused, show pause imgae
