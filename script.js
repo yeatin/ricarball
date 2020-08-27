@@ -134,7 +134,7 @@ drawGameover = () => {
     if (isGameover) {
         // draw the background
         ctx.fillStyle = 'rgb(88, 85, 85)';
-        ctx.fillRect(30 , c.height / 4, c.width - 60, c.height - c.height / 3);
+        ctx.fillRect(30, c.height / 4, c.width - 60, c.height - c.height / 3);
         // draw the title
         ctx.font = `6em ${font}`;
         ctx.fillStyle = 'white';
