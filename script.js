@@ -34,6 +34,7 @@ const net = {
 const player = {
     x: 10,
     y: (c.height - paddleHeight) / 2,
+    speed: 8,
     score: 0
 }
 
@@ -177,9 +178,9 @@ collision = (paddle, ball) => {
 movePaddles = () => {
     //move player
     if (arrow.up && player.y >= 0) {
-        player.y -= 8
+        player.y -= player.speed;
     } else if (arrow.down && player.y + paddleHeight <= c.height) {
-        player.y += 8
+        player.y += player.speed;
     }
     // move ai
     if (ball.x >= c.width / 4 && ai.y >= 0 && ai.y + paddleHeight <= c.height) {
