@@ -2,22 +2,25 @@
 const c = document.getElementById('canvas');
 const ctx = c.getContext('2d');
 
-// remove pause button's event on spacebar
+// remove pause button's event on spacebarPressed
 window.addEventListener('keydown', (event) => event.keyCode === 32 ? event.preventDefault() : null);
 
 // general params
-netWidth = 4;
-paddleWidth = 10;
-paddleHeight = 100;
-font = 'franchise';
+const netWidth = 4;
+const paddleWidth = 10;
+const paddleHeight = 100;
+const font = 'franchise';
 let onButtonPressed = false;
+let isGameover = false;
+let isNewGame = false;
+let winningScore = 7;
 
 // keyboard params
 let arrow = {
     up: false,
     down: false
 }
-let spacebar = false;
+let spacebarPressed = false;
 
 // net
 const net = {
@@ -46,7 +49,7 @@ const ball = {
     // the default location of the ball is in player's position
     x: player.x + 20,
     y: c.height / 2,
-    radius: 13,
+    radius: 10,
     speed: 7,
     velocityX: 3,
     velocityY: 3,
@@ -66,6 +69,13 @@ const gifRight = {
 // FUNCTIONS
 // pause the game
 pause = () => onButtonPressed = !onButtonPressed;
+
+// background
+drawBackground = () => {
+    // draw the background
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, c.width, c.height)
+}
 
 // net
 drawNet = () => {
@@ -91,7 +101,7 @@ drawPaddle = (x, y) => {
 
 // load images
 const ballImg = new Image();
-ballImg.src = './ricardo.jpg';
+ballImg.src = './imgs/ricardo.jpg';
 
 // ball
 drawBall = (x, y, radius) => {
@@ -106,7 +116,7 @@ drawBall = (x, y, radius) => {
     ctx.closePath();
     ctx.clip();
     // draw ricardo
-    ctx.drawImage(ballImg, x - 35, y - 30, 70, 70);
+    ctx.drawImage(ballImg, x - 30, y - 25, 60, 60);
     ctx.restore();
 }
 
@@ -118,6 +128,51 @@ drawPause = () => {
     ctx.fillText('PAUSED', c.width / 2, c.height / 2);
 }
 
+// gameover
+drawGameover = () => {
+    if (isGameover) {
+        // draw the background
+        ctx.fillStyle = 'rgb(88, 85, 85)';
+        ctx.fillRect(30 , c.height / 4, c.width - 60, c.height - c.height / 3);
+        // draw the title
+        ctx.font = `6em ${font}`;
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        // to see who scores winningScore
+        winner = player.score === winningScore ? 'YOU WIN' : 'COMPUTER WINS';
+        ctx.fillText(winner, c.width / 2, c.height / 2);
+        ctx.font = `3em ${font}`;
+        ctx.fillText('CLICK THE BUTTON BELOW', c.width / 2, c.height / 2 + 100);
+        ctx.fillText('TO START A NEW GAME', c.width / 2, c.height / 2 + 150);
+        // make the old pause button into the restart button
+        button = document.getElementById('button');
+        button.setAttribute('onclick', 'restart()');
+        button.textContent = 'NEW GAME';
+    }
+}
+
+// check gameover
+checkGameover = () => {
+    if (player.score === winningScore || ai.score === winningScore) {
+        isGameover = true;
+    }
+}
+
+// detect ball collisions
+collision = (paddle, ball) => {
+    paddle.top = paddle.y;
+    paddle.bottom = paddle.y + paddleHeight;
+    paddle.right = paddle.x + paddleWidth;
+    paddle.left = paddle.x;
+
+    ball.top = ball.y - ball.radius;
+    ball.bottom = ball.y + ball.radius;
+    ball.right = ball.x + ball.radius;
+    ball.left = ball.x - ball.radius;
+
+    return ball.left < paddle.right && ball.top < paddle.bottom && ball.x > paddle.left && ball.bottom > paddle.top;
+}
+
 // move paddles
 movePaddles = () => {
     //move player
@@ -127,8 +182,8 @@ movePaddles = () => {
         player.y += 8
     }
     // move ai
-    if (ball.x >= c.width / 4 && ai.y >=0 && ai.y + paddleHeight <= c.height) {
-        ai.y += (ball.y - (ai.y + paddleHeight / 2)) * 0.09;
+    if (ball.x >= c.width / 4 && ai.y >= 0 && ai.y + paddleHeight <= c.height) {
+        ai.y += (ball.y - (ai.y + paddleHeight / 2)) * 0.13;
         // when ai paadle hits the top or bottom
     } else if (ai.y <= 0) {
         ai.y += 1;
@@ -137,19 +192,22 @@ movePaddles = () => {
     }
 }
 
-// pause the game when player hits enter button
-window.addEventListener('keydown', (event) => event.keyCode === 13 ? pause() : null);
+// pause or restart the game when player hits enter button
+window.addEventListener('keydown', (event) => {
+    event.keyCode === 13 && !isGameover ? pause()
+        : event.keyCode === 13 && isGameover
+            ? restart() : null;
+});
+const enter = document.getElementById('button');
+enter.addEventListener('keydown', (event) => event.keyCode === 13 ? pause() : null);
 
 
 
 render = () => {
-    // draw the background
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, c.width, c.height)
+    // draw background
+    drawBackground();
     // when the game is paused, show pause imgae
-    if (onButtonPressed) {
-        drawPause();
-    } else { }
+    if (onButtonPressed) { drawPause() }
     // net
     drawNet();
     // player's score
@@ -162,6 +220,8 @@ render = () => {
     drawPaddle(ai.x, ai.y);
     // ball
     drawBall(ball.x, ball.y, ball.radius, ball.color);
+    // when the game is over, show gameover
+    if (isGameover) { return drawGameover() }
 }
 
 // update function, to update positions of everything
@@ -177,7 +237,7 @@ update = () => {
                 break;
             case 32:
                 if (!onButtonPressed) {
-                    spacebar = true;
+                    spacebarPressed = true;
                     break;
                 }
         }
@@ -194,7 +254,7 @@ update = () => {
         }
     }
 
-    if (!spacebar) {
+    if (!spacebarPressed) {
         // hit the ball when it's player's position
         window.addEventListener('keydown', onKeyDownChange);
         window.addEventListener('keyup', onKeyUpChange);
@@ -226,6 +286,10 @@ update = () => {
             ai.score++;
             reset();
         }
+
+        // check is the game over
+        checkGameover();
+
         // move the ball
         ball.x += ball.velocityX;
         ball.y += ball.velocityY;
@@ -237,7 +301,7 @@ update = () => {
         // if ball hits a paddle 
         if (collision(paddle, ball)) {
             // default angle is 0
-            // when hitting the top of the paddle
+            // when it hits the top of the paddle
             if (ball.y < paddle.y + paddleHeight / 2) {
                 // -1 * Math.PI / 4 = -45deg
                 angle = -1 * Math.PI / 4;
@@ -248,30 +312,32 @@ update = () => {
             ball.velocityX = (paddle === player ? 1 : -1) * ball.speed * Math.cos(angle);
             ball.velocityY = ball.speed * Math.sin(angle);
 
-            ball.speed += 0.3;
+            ball.speed += 1;
         }
     }
 }
 
+// reset the game when anyone scores
 reset = () => {
     ball.speed = 7;
 
     // let the player hold the ball
-    spacebar = false;
+    spacebarPressed = false;
 }
 
-collision = (paddle, ball) => {
-    paddle.top = paddle.y;
-    paddle.bottom = paddle.y + paddleHeight;
-    paddle.right = paddle.x + paddleWidth;
-    paddle.left = paddle.x;
-
-    ball.top = ball.y - ball.radius;
-    ball.bottom = ball.y + ball.radius;
-    ball.right = ball.x + ball.radius;
-    ball.left = ball.x - ball.radius;
-
-    return ball.left < paddle.right && ball.top < paddle.bottom && ball.x > paddle.left && ball.bottom > paddle.top;
+// restart a new game when the game is over
+restart = () => {
+    // change the restart button back to pause button
+    isGameover = false;
+    button = document.getElementById('button');
+    button.setAttribute('onclick', 'pause()');
+    button.textContent = "PAUSE/RESUME";
+    // restore paddles abd scores
+    player.y = (c.height - paddleHeight) / 2;
+    player.score = 0;
+    ai.y = (c.height - paddleHeight) / 2;
+    ai.score = 0;
+    gameLoop();
 }
 
 gameLoop = () => {
@@ -280,8 +346,12 @@ gameLoop = () => {
             render(),
             update()
         )
-        : render()
-
+        : (
+            render()
+        )
+    !isGameover ?
+        window.requestAnimationFrame(gameLoop)
+        : render();
 }
 
-setInterval(gameLoop, 1000 / 90)
+gameLoop();

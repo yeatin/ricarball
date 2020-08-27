@@ -1,11 +1,11 @@
 @font-face {
     font-family: franchise;
-    src: url(Franchise.ttf);
+    src: url(./fonts/Franchise.ttf);
 }
 
 @font-face {
     font-family: russo;
-    src: url(RussoOne-Regular.ttf)
+    src: url(./fonts/RussoOne-Regular.ttf)
 }
 
 html {
@@ -43,17 +43,18 @@ h1 {
     color: white;
 }
 
+.box > p {
+    font-family: russo;
+    font-size: 1em;
+    margin: 0;
+}
+
 .box > p:first-child {
     font-family: franchise;
     font-size: 2.5em;
     margin: 1em 0 0 0;
 }
 
-.box > p:last-child {
-    font-family: russo;
-    font-size: 1em;
-    margin: 0;
-}
 
 .box2 {
     flex: 1;
@@ -89,6 +90,7 @@ button {
     font-family: franchise;
     font-size: 5em;
     padding: 0 0.7em;
+    margin-top: 3px;
     height: auto;
 }
 
