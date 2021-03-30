@@ -1,7 +1,12 @@
-This project was made for "coding_challenge-30 --- PongPongPong (using JavaScript or Python)" of ZTM.
-Using Ricardo Milos materials is only for entertainment purpose with all due respect and as the identity of Ricardo is a well-beloved character on the Internet,
-one of my personal favorites too.
-
-Hope everyone enjoys this mini game I created.
-Make it throught to 7 points to beat this game.
-Have fun!
+# Ricarball
+It's a web game with inspiration of **Ping Pong**. The ball and game theme are based on the dancer, *Ricardo*. 
+## Built With
+* Javascript
+* HTML
+* CSS
+## Skills Tree
+* HTML Canvas Graphics
+* Game-making
+## How to Play
+1. Go to https://yeatin.github.io/ricarball/
+1. Read the instructions on the game page carefully.
